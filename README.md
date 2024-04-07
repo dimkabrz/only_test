@@ -1,46 +1,71 @@
-# Getting Started with Create React App
+## Описание
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Данный проект был выполнен как тестовое задание для компании Only. Этот проект создан с использованием следующих технологий и инструментов:
 
-## Available Scripts
+- [React](https://reactjs.org/) - библиотека для разработки пользовательских интерфейсов.
+- [TypeScript](https://www.typescriptlang.org/) - язык программирования с типизацией для JavaScript.
+- [Swiper](https://swiperjs.com/) - библиотека для создания современных, красивых слайдеров и каруселей.
 
-In the project directory, you can run:
 
-### `npm start`
+## Установка
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+1. Склонируйте репозиторий на свою локальную машину:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+   ```
+   git clone https://github.com/dimkabrz/only_test.git
+   ```
 
-### `npm test`
+2. Перейдите в директорию проекта:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```
+   cd your-project
+   ```
 
-### `npm run build`
+3. Установите зависимости:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   ```
+   npm install
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Запуск
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Чтобы запустить проект, выполните следующие команды:
 
-### `npm run eject`
+    ```
+    npm start
+    ```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Проект будет доступен по адресу: ` http://localhost:3000,
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Описание
 
-## Learn More
+Реализовать следующий блок в соответствии с макетом
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Блок содержит информацию о временных отрезках, в каждом из которых существует несколько событий.
+При переключении временных отрезков изменяются соответствующие числа и под ними показывается новый слайдер, который содержит подробную информацию по ключевым событиям на активном временном отрезке.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Возможно существование от 2 до 6 временных отрезков. Все интерактивные точки на окружности располагаются на одинаковом расстоянии друг от друга
+
+Весь блок стоит сделать независимым от другой логики на странице.
+Например, если добавить на страницу ещё один такой же блок, верстка и логика работы этих блоков не будет нарушена
+
+Демонстрация работы блока - пример с максимальным количеством временных отрезков
+
+Все существующие в макете линии — это не разметочная сетка, а часть верстки
+
+Требования к реализации
+
+Необходимо использовать Typescript
+Можно использовать React.js или нативный JS на Ваш выбор
+В случае использования нативного JS, можно воспользоваться любым удобным для Вас HTML-шаблонизатором или обычным HTML
+Стилизация с использованием SASS/SCSS (В случае работы с React.js, возможно использование styled-components)
+Сборка проекта с помощью Webpack
+Для работы со слайдерами необходимо использовать библиотеку Swiper
+Для реализации js-анимаций можно использовать библиотеку gsap
+
+Не использовать JQuery
+Не использовать Bootstrap, Tailwind и т.п.
+Не использовать библиотеки с готовыми UI-компонентами такие, как MaterialUI, AntDesign и т.п.
+
