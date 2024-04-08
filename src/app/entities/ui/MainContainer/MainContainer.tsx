@@ -5,14 +5,24 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import React, {RefObject, useRef, useState} from "react";
 import {mockIntervals} from "../../../../mock/mock";
+import 'swiper/css/pagination';
 
 
 const Main = styled.div`
   margin: 0 8% 0 17%;
-  border-left: 1px solid rgb(66, 86, 122, 0.1);
-  border-right: 1px solid rgb(66, 86, 122, 0.1);
+  border-left: 1px solid rgba(66, 86, 122, 0.1);
+  border-right: 1px solid rgba(66, 86, 122, 0.1);
   height: 100vh;
   position: relative;
+  @media (max-width: 768px) {
+    border: none;
+    display: flex;
+    width: auto;
+    flex-direction: column;
+    margin:0;
+    padding: 59px 2px 0 20px;
+    height: auto;
+  }
 `;
 const Title = styled.div`
   position: absolute;
@@ -21,6 +31,13 @@ const Title = styled.div`
   display: flex;
   gap: 78px;
   width: 430px;
+  @media (max-width: 768px) {
+    position: relative;
+    top: 0;
+    left: 0;
+    height: initial;
+    width: 151px;
+  }
 `
 const Lighter = styled.div`
   background: rgb(56, 119, 238); /* Fallback for older browsers */
@@ -30,6 +47,9 @@ const Lighter = styled.div`
   background: linear-gradient(#3877EE, #EF5DA8);
   height: 120px;
   width: 5px;
+  @media (max-width: 768px) {
+    display: none;
+  }
 `
 
 const HeaderText = styled.h1`
@@ -38,6 +58,12 @@ const HeaderText = styled.h1`
   color: #42567A;
   line-height: 67px;
   align-self: flex-end;
+  @media (max-width: 768px) {
+    font-size: 20px;
+    line-height: initial;
+    width: 151px;
+    margin-bottom: 56px;
+  }
 `
 const Circle = styled.div`
   height: 530px;
@@ -50,6 +76,9 @@ const Circle = styled.div`
   transition: 1s;
   z-index: 10;
   background: transparent;
+  @media (max-width: 768px) {
+    display: none;
+  }
 `
 
 const TemplateCircle = styled.div`
@@ -71,6 +100,12 @@ const Line = styled.div<{ orientation?: string, $vertical: string, $zindex?: str
   height: ${props => props.$vertical === 'true' ? '100%' : '1px'};
   transform: ${props => props.orientation};
   z-index: ${props => props.$zindex};
+  @media (max-width: 768px) {
+    display: ${props => props.$vertical ==='true' && 'none'};
+    background: rgb(199, 205, 217);
+    width: calc(100% - 40px);
+    top: 123%;
+  }
 `
 
 const DotWrapper = styled.div`
@@ -122,18 +157,40 @@ const NavigateContainer = styled.div`
   padding-left: 80px;
   position: absolute;
   bottom: 27%;
+  @media (max-width: 768px) {
+    position: fixed;
+    bottom: 14px;
+    left: 20px;
+    padding-left: 0;
+    font-size: 20px;
+    gap: 10px;
+  }
 `
 
 const NavigateBtns = styled.div`
   display: flex;
   flex-direction: row;
   gap: 20px;
+  @media (max-width: 768px) {
+    gap: 10px;
+  }
 `
 const ArrowBtn = styled.button<{ orientation?: string }>`
   border: none;
   transform: ${props => props.orientation ? props.orientation : ''};
   cursor: pointer;
   height: 50px;
+  @media (max-width: 768px) {
+    height: 25px;
+    width: 25px;
+  }
+`
+
+const ArrowIMG = styled.img`
+  @media (max-width: 768px) {
+    height: 25px;
+    width: 25px;
+  }
 `
 const DateTitle = styled.div`
   display: flex;
@@ -144,6 +201,13 @@ const DateTitle = styled.div`
   left: calc(35% - 270px);
   gap: 70px;
   background: transparent;
+  @media (max-width: 768px) {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 300px;
+    gap: 30px;
+  }
 `
 const HeaderDate = styled.div<{ role: string }>`
   font-weight: 700;
@@ -151,6 +215,9 @@ const HeaderDate = styled.div<{ role: string }>`
   color: ${props => props.role === 'start' ? 'rgb(93, 95, 239, 0.8)' : 'rgb(239, 93, 168, 0.8)'};
   background: transparent;
   z-index: 1;
+  @media (max-width: 768px) {
+    font-size: 56px;
+  }
 `
 
 const SwiperContainer = styled.div`
@@ -160,6 +227,11 @@ const SwiperContainer = styled.div`
   bottom: 73px;
   height: 165px;
   width: 100%;
+  @media (max-width: 768px) {
+    width: 97%;
+    top: 313px;
+    left: 20px;
+  }
 `
 const SwiperBtn = styled.button<{ $left?: string, $right?: string, transform?: string }>`
   height: 40px;
@@ -175,6 +247,9 @@ const SwiperBtn = styled.button<{ $left?: string, $right?: string, transform?: s
   transform: ${props => props.transform};
   cursor: pointer;
   background: white;
+  @media (max-width: 768px) {
+    display: none;
+  }
 `
 
 
@@ -292,10 +367,10 @@ export const MainContainer = () => {
                 {currentIndex + 1} / {mockIntervals.length}
                 <NavigateBtns>
                     <ArrowBtn onClick={decrement}>
-                        <img src={'./arrow.png'} alt={''}/>
+                        <ArrowIMG src={'./arrow.png'} alt={''}/>
                     </ArrowBtn>
                     <ArrowBtn onClick={increment} orientation={'rotate(180deg)'}>
-                        <img src={'./arrow.png'} alt={''}/>
+                        <ArrowIMG src={'./arrow.png'} alt={''}/>
                     </ArrowBtn>
                 </NavigateBtns>
             </NavigateContainer>
@@ -305,8 +380,19 @@ export const MainContainer = () => {
                     src={'./color-arrow.svg'} alt={''}/></SwiperBtn>
                 <SwiperBtn className={'next_btn'} $right={'40px'}><img src={'./color-arrow.svg'} alt={''}/></SwiperBtn>
                 <Swiper
-                    slidesPerView={3}
-                    spaceBetween={80}
+                    breakpoints={{
+                        0: {
+                            spaceBetween: 40,
+                            slidesPerView: 1.5
+                        },
+                        568:{
+                            slidesPerView:2
+                        },
+                        768: {
+                            spaceBetween:80,
+                            slidesPerView: 3
+                        }
+                    }}
                     padding={20}
                     pagination={{
                         clickable: true,

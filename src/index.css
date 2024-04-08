@@ -34,3 +34,26 @@
   margin-right: auto;
   background: transparent;
 }
+.swiper-pagination-bullet-active{
+  background: #42567A!important;
+}
+
+.swiper-pagination{
+  display: none;
+}
+@media screen and (max-width: 768px){
+  .swiper{
+    width: auto;
+    position: initial!important;
+    margin: 0!important;
+  }
+  .swiper-pagination{
+    display: block;
+    position: fixed!important;
+    bottom: 32px!important;
+    background: transparent;
+  }
+  .swiper-slide{
+    gap: 24px;
+  }
+}
