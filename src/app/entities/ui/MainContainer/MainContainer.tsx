@@ -13,15 +13,17 @@ const Main = styled.div`
   border-left: 1px solid rgba(66, 86, 122, 0.1);
   border-right: 1px solid rgba(66, 86, 122, 0.1);
   height: 100vh;
+  overflow: hidden;
   position: relative;
   @media (max-width: 768px) {
     border: none;
     display: flex;
     width: auto;
     flex-direction: column;
-    margin:0;
+    margin: 0;
     padding: 59px 2px 0 20px;
     height: auto;
+    overflow: initial;
   }
 `;
 const Title = styled.div`
@@ -101,7 +103,7 @@ const Line = styled.div<{ orientation?: string, $vertical: string, $zindex?: str
   transform: ${props => props.orientation};
   z-index: ${props => props.$zindex};
   @media (max-width: 768px) {
-    display: ${props => props.$vertical ==='true' && 'none'};
+    display: ${props => props.$vertical === 'true' && 'none'};
     background: rgb(199, 205, 217);
     width: calc(100% - 40px);
     top: 123%;
@@ -122,27 +124,22 @@ const DotWrapper = styled.div`
   background: transparent;
   cursor: pointer;
   z-index: 10005;
-
-`
-const Dot = styled.div`
-  width: 6px;
-  height: 6px;
-  background: rgb(66, 86, 122);
-  border-radius: 50%;
 `
 
-const Number = styled.div`
+const Number = styled.div<{ $hover: boolean }>`
   font-size: 20px;
   font-weight: 400;
-  height: 56px;
-  width: 56px;
+  height: ${props => props.$hover ? '56px' : '6px'};
+  width: ${props => props.$hover ? '56px' : '6px'};
   border-radius: 50%;
   border: 1px solid rgb(66, 86, 122);;
   color: rgb(66, 86, 122);
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f4f5f9;
+  background: ${props => props.$hover ? '#f4f5f9' : 'rgb(66, 86, 122)'};
+  transition: 0.5s;
+  overflow: hidden;
 `
 
 const SlideData = styled.div`
@@ -212,7 +209,7 @@ const DateTitle = styled.div`
 const HeaderDate = styled.div<{ role: string }>`
   font-weight: 700;
   font-size: 200px;
-  color: ${props => props.role === 'start' ? 'rgb(93, 95, 239, 0.8)' : 'rgb(239, 93, 168, 0.8)'};
+  color: ${props => props.role === 'start' ? 'rgba(93, 95, 239, 0.8)' : 'rgba(239, 93, 168, 0.8)'};
   background: transparent;
   z-index: 1;
   @media (max-width: 768px) {
@@ -220,13 +217,15 @@ const HeaderDate = styled.div<{ role: string }>`
   }
 `
 
-const SwiperContainer = styled.div`
+const SwiperContainer = styled.div<{ $isRotate?: boolean }>`
   display: flex;
   flex-direction: row;
   position: absolute;
   bottom: 73px;
   height: 165px;
   width: 100%;
+  opacity: ${props => props.$isRotate ? '0' : '1'};
+  transition: opacity 0.5s;
   @media (max-width: 768px) {
     width: 97%;
     top: 313px;
@@ -255,7 +254,7 @@ const SwiperBtn = styled.button<{ $left?: string, $right?: string, transform?: s
 
 export type Intervals = {
     id: number,
-    title:string,
+    title: string,
     intervalStart: number,
     intervalEnd: number,
     importantDate: {
@@ -278,8 +277,10 @@ export const MainContainer = () => {
 
     const parentCircle: RefObject<HTMLDivElement> = useRef(null);
 
+    const [isRotate, setIsRotate] = useState(false)
 
     const decrement = () => {
+        setIsRotate(true)
         if (currentIndex > 0) {
             setCurrentInterval(mockIntervals[currentIndex - 1])
             setCurrentIndex(currentIndex - 1)
@@ -290,10 +291,14 @@ export const MainContainer = () => {
         setCurrentRotate(currentRotate + 360 / mockIntervals.length)
 
         setHovered(0)
+        setTimeout(() => {
+            setIsRotate(false)
+        }, 1000)
 
     }
 
     const increment = () => {
+        setIsRotate(true)
         if (currentIndex < mockIntervals.length - 1) {
             setCurrentInterval(mockIntervals[currentIndex + 1])
             setCurrentIndex(currentIndex + 1)
@@ -304,10 +309,12 @@ export const MainContainer = () => {
         setCurrentRotate(currentRotate - 360 / mockIntervals.length)
 
         setHovered(0)
-
+        setTimeout(() => {
+            setIsRotate(false)
+        }, 1000)
     }
 
-    const positiveRotate = currentRotate >= 0 ? currentRotate : currentRotate + 360
+    const positiveRotate = currentRotate >= 0 ? currentRotate : currentRotate + 360 * Math.abs(currentRotate % 360 + 1)
 
 
     return (
@@ -327,33 +334,33 @@ export const MainContainer = () => {
                             onMouseEnter={() => {
                                 setHovered(index + 1)
                             }}
-                            onMouseLeave={(e) => {
-                                const target = e.target as HTMLElement
-                                if (!target.classList.contains('number')) {
-
-                                }
+                            onMouseLeave={() => {
                                 setHovered(null)
                             }}
                         >
-                            {currentIndex === mockIntervals.indexOf(date) || (hovered === index + 1 )
-                                ?
-                                <Number
-                                    onClick={() => {
-                                        const newRotate = currentRotate - (index - currentIndex) * 360 / mockIntervals.length;
-                                        setCurrentIndex(index)
-                                        setCurrentRotate(newRotate)
-                                        setCurrentInterval(mockIntervals[index])
-                                    }}
-                                >
+                            <Number
+                                $hover={currentIndex === mockIntervals.indexOf(date) || (hovered === index + 1)}
+                                onClick={() => {
+                                    setIsRotate(true)
+                                    const newRotate = currentRotate - (index - currentIndex) * 360 / mockIntervals.length;
+                                    setCurrentIndex(index)
+                                    setCurrentRotate(newRotate)
+                                    setCurrentInterval(mockIntervals[index])
+                                    setTimeout(() => {
+                                        setIsRotate(false)
+                                    }, 1000)
+                                }}
+                            >
+                                {(currentIndex === mockIntervals.indexOf(date) || (hovered === index + 1)) &&
                                     <span
-                                        className={'number'}
-                                        style={{transform: `rotate(-${360 / mockIntervals.length * (index + 1) + 40 + positiveRotate}deg)`}}>
+                                        style={{
+                                            background: 'transparent',
+                                            transform: `rotate(-${360 / mockIntervals.length * (index + 1) + 40 + positiveRotate}deg)`
+                                        }}>
                                         {index + 1}
                                     </span>
-                                </Number>
-                                :
-                                <Dot className={'point'}/>
-                            }
+                                }
+                            </Number>
                         </DotWrapper>
 
                     </TemplateCircle>
@@ -375,7 +382,7 @@ export const MainContainer = () => {
                 </NavigateBtns>
             </NavigateContainer>
 
-            <SwiperContainer>
+            <SwiperContainer $isRotate={isRotate}>
                 <SwiperBtn className={'prev_btn'} $left={'20px'} transform={'rotate(180deg)'}><img
                     src={'./color-arrow.svg'} alt={''}/></SwiperBtn>
                 <SwiperBtn className={'next_btn'} $right={'40px'}><img src={'./color-arrow.svg'} alt={''}/></SwiperBtn>
@@ -385,11 +392,11 @@ export const MainContainer = () => {
                             spaceBetween: 40,
                             slidesPerView: 1.5
                         },
-                        568:{
-                            slidesPerView:2
+                        568: {
+                            slidesPerView: 2
                         },
                         768: {
-                            spaceBetween:80,
+                            spaceBetween: 80,
                             slidesPerView: 3
                         }
                     }}
