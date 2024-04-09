@@ -83,6 +83,19 @@ const Circle = styled.div`
   }
 `
 
+const CurrentTitle = styled.div`
+  width: 100%;
+  background: transparent;
+  font-weight: 700;
+  color: #42567A;
+  position: absolute;
+  top: -92%;
+  left: -25%;
+  @media (max-width: 768px) {
+    display: none;
+  }
+`
+
 const TemplateCircle = styled.div`
   height: 530px;
   width: 530px;
@@ -277,7 +290,8 @@ export const MainContainer = () => {
 
     const parentCircle: RefObject<HTMLDivElement> = useRef(null);
 
-    const [isRotate, setIsRotate] = useState(false)
+    const [isRotate, setIsRotate] = useState(false);
+
 
     const decrement = () => {
         setIsRotate(true)
@@ -294,7 +308,6 @@ export const MainContainer = () => {
         setTimeout(() => {
             setIsRotate(false)
         }, 1000)
-
     }
 
     const increment = () => {
@@ -341,11 +354,12 @@ export const MainContainer = () => {
                             <Number
                                 $hover={currentIndex === mockIntervals.indexOf(date) || (hovered === index + 1)}
                                 onClick={() => {
-                                    setIsRotate(true)
+                                    if (currentIndex === index) return;
+                                    setIsRotate(true);
                                     const newRotate = currentRotate - (index - currentIndex) * 360 / mockIntervals.length;
-                                    setCurrentIndex(index)
-                                    setCurrentRotate(newRotate)
-                                    setCurrentInterval(mockIntervals[index])
+                                    setCurrentIndex(index);
+                                    setCurrentRotate(newRotate);
+                                    setCurrentInterval(mockIntervals[index]);
                                     setTimeout(() => {
                                         setIsRotate(false)
                                     }, 1000)
@@ -360,6 +374,13 @@ export const MainContainer = () => {
                                         {index + 1}
                                     </span>
                                 }
+                                {(!isRotate && (currentIndex === index)) && <CurrentTitle
+                                    style={{
+
+                                        transform: `rotate(-${360 / mockIntervals.length * (index + 1) + 40 + positiveRotate}deg)`
+                                    }}>
+                                    {currentInterval.title}
+                                </CurrentTitle>}
                             </Number>
                         </DotWrapper>
 
