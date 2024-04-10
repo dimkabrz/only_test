@@ -292,15 +292,45 @@ export const MainContainer = () => {
 
     const [isRotate, setIsRotate] = useState(false);
 
+    const [startDate, setStartDate] = useState<number>(mockIntervals[0].intervalStart)
+
+    const [endDate, setEndDate] = useState<number>(mockIntervals[0].intervalEnd)
+
+    const updateCurrentTypeDate = (oldStartDate: number, newStartDate: number, setDate: (value: number) => void) => {
+        if (oldStartDate >= newStartDate) {
+            let count = 0;
+            const interval = setInterval(() => {
+                setDate(oldStartDate - count)
+                count++;
+                if (count > (oldStartDate - newStartDate)) {
+                    clearInterval(interval);
+                }
+            }, 0.1);
+        } else {
+            let count = 0;
+            const interval = setInterval(() => {
+                setDate(oldStartDate + count)
+                count++;
+                if (count > (newStartDate - oldStartDate)) {
+                    clearInterval(interval);
+                }
+            }, 0.1);
+        }
+    }
+
 
     const decrement = () => {
         setIsRotate(true)
         if (currentIndex > 0) {
             setCurrentInterval(mockIntervals[currentIndex - 1])
-            setCurrentIndex(currentIndex - 1)
+            setCurrentIndex(currentIndex - 1);
+            updateCurrentTypeDate(startDate, mockIntervals[currentIndex - 1].intervalStart, setStartDate)
+            updateCurrentTypeDate(endDate, mockIntervals[currentIndex - 1].intervalEnd, setEndDate)
         } else {
             setCurrentInterval(mockIntervals[mockIntervals.length - 1])
             setCurrentIndex(mockIntervals.length - 1)
+            updateCurrentTypeDate(startDate, mockIntervals[mockIntervals.length - 1].intervalStart, setStartDate);
+            updateCurrentTypeDate(endDate, mockIntervals[mockIntervals.length - 1].intervalEnd, setEndDate)
         }
         setCurrentRotate(currentRotate + 360 / mockIntervals.length)
 
@@ -308,6 +338,7 @@ export const MainContainer = () => {
         setTimeout(() => {
             setIsRotate(false)
         }, 1000)
+
     }
 
     const increment = () => {
@@ -315,9 +346,13 @@ export const MainContainer = () => {
         if (currentIndex < mockIntervals.length - 1) {
             setCurrentInterval(mockIntervals[currentIndex + 1])
             setCurrentIndex(currentIndex + 1)
+            updateCurrentTypeDate(startDate, mockIntervals[currentIndex + 1].intervalStart, setStartDate)
+            updateCurrentTypeDate(endDate, mockIntervals[currentIndex + 1].intervalEnd, setEndDate)
         } else {
             setCurrentInterval(mockIntervals[0])
             setCurrentIndex(0)
+            updateCurrentTypeDate(startDate, mockIntervals[0].intervalStart, setStartDate)
+            updateCurrentTypeDate(endDate, mockIntervals[0].intervalEnd, setEndDate)
         }
         setCurrentRotate(currentRotate - 360 / mockIntervals.length)
 
@@ -360,9 +395,11 @@ export const MainContainer = () => {
                                     setCurrentIndex(index);
                                     setCurrentRotate(newRotate);
                                     setCurrentInterval(mockIntervals[index]);
+                                    updateCurrentTypeDate(startDate, mockIntervals[index].intervalStart, setStartDate)
+                                    updateCurrentTypeDate(endDate, mockIntervals[index].intervalEnd, setEndDate)
                                     setTimeout(() => {
                                         setIsRotate(false)
-                                    }, 1000)
+                                    }, 700)
                                 }}
                             >
                                 {(currentIndex === mockIntervals.indexOf(date) || (hovered === index + 1)) &&
@@ -371,8 +408,8 @@ export const MainContainer = () => {
                                             background: 'transparent',
                                             transform: `rotate(-${360 / mockIntervals.length * (index + 1) + 40 + positiveRotate}deg)`
                                         }}>
-                                        {index + 1}
-                                    </span>
+            {index + 1}
+            </span>
                                 }
                                 {(!isRotate && (currentIndex === index)) && <CurrentTitle
                                     style={{
@@ -388,8 +425,8 @@ export const MainContainer = () => {
                 ))}
             </Circle>
             <DateTitle>
-                <HeaderDate role={'start'}>{currentInterval.intervalStart}</HeaderDate>
-                <HeaderDate role={'end'}> {currentInterval.intervalEnd}</HeaderDate>
+                <HeaderDate role={'start'}>{startDate}</HeaderDate>
+                <HeaderDate role={'end'}> {endDate}</HeaderDate>
             </DateTitle>
             <NavigateContainer>
                 {currentIndex + 1} / {mockIntervals.length}
