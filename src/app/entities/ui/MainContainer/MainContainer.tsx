@@ -75,7 +75,7 @@ const Circle = styled.div`
   position: relative;
   top: 215px;
   left: calc(50% - 270px);
-  transition: 1s;
+  transition: 0.7s;
   z-index: 10;
   background: transparent;
   @media (max-width: 768px) {
@@ -96,7 +96,7 @@ const CurrentTitle = styled.div`
   }
 `
 
-const Line = styled.div<{ orientation?: string, $vertical: string, $zindex?: string }>`
+const Line = styled.div<{ orientation?: string, $vertical: string, $zindex?: string, $mobile?: boolean }>`
   background: rgba(66, 86, 122, 0.1);
   left: ${props => props.$vertical === 'true' && '50%'};
   top: ${props => props.$vertical === 'false' && '480px'};
@@ -105,11 +105,13 @@ const Line = styled.div<{ orientation?: string, $vertical: string, $zindex?: str
   height: ${props => props.$vertical === 'true' ? '100%' : '1px'};
   transform: ${props => props.orientation};
   z-index: ${props => props.$zindex};
+  display: ${props => props.$mobile && 'none'};
   @media (max-width: 768px) {
     display: ${props => props.$vertical === 'true' && 'none'};
     background: rgb(199, 205, 217);
     width: calc(100% - 40px);
     top: 123%;
+    display: ${props => props.$mobile ? 'initial' : 'none'};
   }
 `
 
@@ -142,7 +144,6 @@ const Number = styled.div<{ $hover: boolean }>`
   align-items: center;
   background: ${props => props.$hover ? '#f4f5f9' : 'rgb(66, 86, 122)'};
   transition: 0.5s;
-  //overflow: hidden;
 `
 
 const SlideData = styled.div`
@@ -235,6 +236,19 @@ const SwiperContainer = styled.div<{ $isRotate?: boolean }>`
     left: 20px;
   }
 `
+
+const MobileTitle = styled.div`
+  background: transparent;
+  font-weight: 700;
+  color: #42567A;
+  position: absolute;
+  top: 255px;
+  display: none;
+  @media (max-width: 768px) {
+    display: initial;
+  }
+`
+
 const SwiperBtn = styled.button<{ $left?: string, $right?: string, transform?: string }>`
   height: 40px;
   width: 40px;
@@ -355,7 +369,6 @@ export const MainContainer = () => {
         setHovered(0)
     }
 
-    const positiveRotate = currentRotate >= 0 ? currentRotate : currentRotate + Math.abs(currentRotate / 360);
 
     const stepValue = 2 * Math.PI / mockIntervals.length;
 
@@ -369,6 +382,14 @@ export const MainContainer = () => {
             </Title>
             <Line $vertical={'true'} $zindex={'2'}/>
             <Line $vertical={'false'} orientation={'rotate(0.5turn)'}/>
+            {!isRotate &&
+                <>
+                    <Line $mobile={true} $vertical={'false'} orientation={'rotate(0.5turn)'}/>
+                    <MobileTitle>
+                        {currentInterval.title}
+                    </MobileTitle>
+                </>
+            }
             <Circle id={'circle'} ref={parentCircle} style={{transform: `rotate(${currentRotate}deg)`}}>
                 {mockIntervals.map((date, index) => (
                     <DotWrapper
@@ -397,7 +418,7 @@ export const MainContainer = () => {
                                 updateCurrentTypeDate(endDate, mockIntervals[index].intervalEnd, setEndDate)
                             }}
                             style={{
-                                transform: `rotate(-${360 + positiveRotate}deg)`
+                                transform: `rotate(${currentRotate >= 0 ? -currentRotate : Math.abs(currentRotate)}deg)`
                             }}
                         >
                             {(currentIndex === mockIntervals.indexOf(date) || (hovered === index + 1)) &&
