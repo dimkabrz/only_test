@@ -237,7 +237,7 @@ const SwiperContainer = styled.div<{ $isRotate?: boolean }>`
   }
 `
 
-const MobileTitle = styled.div`
+const MobileTitle = styled.div<{ $isRotate?: boolean }>`
   background: transparent;
   font-weight: 700;
   color: #42567A;
@@ -246,6 +246,8 @@ const MobileTitle = styled.div`
   display: none;
   @media (max-width: 768px) {
     display: initial;
+    opacity: ${props => props.$isRotate ? '0' : '1'};
+    transition: opacity 0.5s;
   }
 `
 
@@ -307,7 +309,7 @@ export const MainContainer = () => {
         setIsRotate(true);
         ref.current = setTimeout(() => {
             setIsRotate(false)
-        }, 1000)
+        }, 700)
     }
 
     const updateCurrentTypeDate = (oldStartDate: number, newStartDate: number, setDate: (value: number) => void) => {
@@ -382,14 +384,10 @@ export const MainContainer = () => {
             </Title>
             <Line $vertical={'true'} $zindex={'2'}/>
             <Line $vertical={'false'} orientation={'rotate(0.5turn)'}/>
-            {!isRotate &&
-                <>
-                    <Line $mobile={true} $vertical={'false'} orientation={'rotate(0.5turn)'}/>
-                    <MobileTitle>
-                        {currentInterval.title}
-                    </MobileTitle>
-                </>
-            }
+            {!isRotate && <Line $mobile={true} $vertical={'false'} orientation={'rotate(0.5turn)'}/> }
+            <MobileTitle $isRotate={isRotate}>
+                {currentInterval.title}
+            </MobileTitle>
             <Circle id={'circle'} ref={parentCircle} style={{transform: `rotate(${currentRotate}deg)`}}>
                 {mockIntervals.map((date, index) => (
                     <DotWrapper
