@@ -95,7 +95,7 @@ const CurrentTitle = styled.div`
   }
 `
 
-const Line = styled.div<{ orientation?: string, $vertical: string, $zindex?: string, $mobile?: boolean }>`
+const Line = styled.div<{ orientation?: string, $vertical: string, $zindex?: string, $mobile?: boolean, $isRotate?:boolean }>`
   background: rgba(66, 86, 122, 0.1);
   left: ${props => props.$vertical === 'true' && '50%'};
   top: ${props => props.$vertical === 'false' && '480px'};
@@ -111,6 +111,8 @@ const Line = styled.div<{ orientation?: string, $vertical: string, $zindex?: str
     width: calc(100% - 40px);
     top: 123%;
     display: ${props => props.$mobile ? 'initial' : 'none'};
+    opacity: ${props => props.$isRotate ? '0' : '1'};
+    transition: opacity 0.5s;
   }
 `
 
@@ -339,15 +341,19 @@ export const MainContainer = () => {
         setCurrentRotate(currentRotate + 360 / mockIntervals.length)
         setHovered(0)
         if (currentIndex > 0) {
-            setCurrentInterval(mockIntervals[currentIndex - 1])
             setCurrentIndex(currentIndex - 1);
             updateCurrentTypeDate(startDate, mockIntervals[currentIndex - 1].intervalStart, setStartDate)
-            updateCurrentTypeDate(endDate, mockIntervals[currentIndex - 1].intervalEnd, setEndDate)
+            updateCurrentTypeDate(endDate, mockIntervals[currentIndex - 1].intervalEnd, setEndDate);
+            setTimeout(() => {
+                setCurrentInterval(mockIntervals[currentIndex - 1])
+            }, 500)
         } else {
-            setCurrentInterval(mockIntervals[mockIntervals.length - 1])
             setCurrentIndex(mockIntervals.length - 1)
             updateCurrentTypeDate(startDate, mockIntervals[mockIntervals.length - 1].intervalStart, setStartDate);
             updateCurrentTypeDate(endDate, mockIntervals[mockIntervals.length - 1].intervalEnd, setEndDate)
+            setTimeout(() => {
+                setCurrentInterval(mockIntervals[mockIntervals.length - 1])
+            }, 500)
         }
     }
 
@@ -385,7 +391,7 @@ export const MainContainer = () => {
             </Title>
             <Line $vertical={'true'} $zindex={'2'}/>
             <Line $vertical={'false'} orientation={'rotate(0.5turn)'}/>
-            {!isRotate && <Line $mobile={true} $vertical={'false'} orientation={'rotate(0.5turn)'}/>}
+            <Line $mobile={true} $vertical={'false'} orientation={'rotate(0.5turn)'} $isRotate={isRotate}/>
             <MobileTitle $isRotate={isRotate}>
                 {currentInterval.title}
             </MobileTitle>
