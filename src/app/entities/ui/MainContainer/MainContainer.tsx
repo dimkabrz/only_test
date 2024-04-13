@@ -89,23 +89,13 @@ const CurrentTitle = styled.div`
   font-weight: 700;
   color: #42567A;
   position: absolute;
-  top: -92%;
-  left: -25%;
+  top: 15px;
+  left: 65px;
   @media (max-width: 768px) {
     display: none;
   }
 `
 
-const TemplateCircle = styled.div`
-  height: 530px;
-  width: 530px;
-  border-radius: 50%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  border: 1px solid transparent;
-  background: transparent;
-`
 const Line = styled.div<{ orientation?: string, $vertical: string, $zindex?: string }>`
   background: rgba(66, 86, 122, 0.1);
   left: ${props => props.$vertical === 'true' && '50%'};
@@ -152,7 +142,7 @@ const Number = styled.div<{ $hover: boolean }>`
   align-items: center;
   background: ${props => props.$hover ? '#f4f5f9' : 'rgb(66, 86, 122)'};
   transition: 0.5s;
-  overflow: hidden;
+  //overflow: hidden;
 `
 
 const SlideData = styled.div`
@@ -280,9 +270,11 @@ export type Intervals = {
 
 export const MainContainer = () => {
 
+    const ref = useRef<ReturnType<typeof setTimeout>>();
+
     const [currentInterval, setCurrentInterval] = useState<Intervals>(mockIntervals[0]);
 
-    const [hovered, setHovered] = useState<number | null>(null)
+    const [hovered, setHovered] = useState<number | null>(null);
 
     const [currentIndex, setCurrentIndex] = useState(mockIntervals.indexOf(currentInterval));
 
@@ -292,9 +284,17 @@ export const MainContainer = () => {
 
     const [isRotate, setIsRotate] = useState(false);
 
-    const [startDate, setStartDate] = useState<number>(mockIntervals[0].intervalStart)
+    const [startDate, setStartDate] = useState<number>(mockIntervals[0].intervalStart);
 
-    const [endDate, setEndDate] = useState<number>(mockIntervals[0].intervalEnd)
+    const [endDate, setEndDate] = useState<number>(mockIntervals[0].intervalEnd);
+
+    const planingRotate = () => {
+        clearTimeout(ref.current)
+        setIsRotate(true);
+        ref.current = setTimeout(() => {
+            setIsRotate(false)
+        }, 1000)
+    }
 
     const updateCurrentTypeDate = (oldStartDate: number, newStartDate: number, setDate: (value: number) => void) => {
         if (oldStartDate >= newStartDate) {
@@ -320,7 +320,7 @@ export const MainContainer = () => {
 
 
     const decrement = () => {
-        setIsRotate(true)
+        planingRotate();
         if (currentIndex > 0) {
             setCurrentInterval(mockIntervals[currentIndex - 1])
             setCurrentIndex(currentIndex - 1);
@@ -335,14 +335,10 @@ export const MainContainer = () => {
         setCurrentRotate(currentRotate + 360 / mockIntervals.length)
 
         setHovered(0)
-        setTimeout(() => {
-            setIsRotate(false)
-        }, 1000)
-
     }
 
     const increment = () => {
-        setIsRotate(true)
+        planingRotate();
         if (currentIndex < mockIntervals.length - 1) {
             setCurrentInterval(mockIntervals[currentIndex + 1])
             setCurrentIndex(currentIndex + 1)
@@ -357,13 +353,13 @@ export const MainContainer = () => {
         setCurrentRotate(currentRotate - 360 / mockIntervals.length)
 
         setHovered(0)
-        setTimeout(() => {
-            setIsRotate(false)
-        }, 1000)
     }
 
-    const positiveRotate = currentRotate >= 0 ? currentRotate : currentRotate + 360 * Math.abs(currentRotate % 360 + 1)
+    const positiveRotate = currentRotate >= 0 ? currentRotate : currentRotate + Math.abs(currentRotate / 360);
 
+    const stepValue = 2 * Math.PI / mockIntervals.length;
+
+    const coords = mockIntervals.map((coord, index) => index * stepValue + Math.PI * 7 / 6)
 
     return (
         <Main>
@@ -375,53 +371,45 @@ export const MainContainer = () => {
             <Line $vertical={'false'} orientation={'rotate(0.5turn)'}/>
             <Circle id={'circle'} ref={parentCircle} style={{transform: `rotate(${currentRotate}deg)`}}>
                 {mockIntervals.map((date, index) => (
-                    <TemplateCircle key={date.id}
-                                    style={{transform: `rotate(${360 / mockIntervals.length * (index + 1) + 40}deg)`}}>
-
-                        <DotWrapper
-                            onMouseEnter={() => {
-                                setHovered(index + 1)
+                    <DotWrapper
+                        onMouseEnter={() => {
+                            setHovered(index + 1)
+                        }}
+                        onMouseLeave={() => {
+                            setHovered(null)
+                        }}
+                        style={{
+                            top: `${530 / 2 + Math.round(265 * (Math.cos(coords[index])))}px`,
+                            left: `${530 / 2 - Math.round(265 * (Math.sin(coords[index])))}px`
+                        }}
+                    >
+                        <Number
+                            $hover={currentIndex === mockIntervals.indexOf(date) || (hovered === index + 1)}
+                            onClick={() => {
+                                if (currentIndex === index) return;
+                                planingRotate();
+                                const newRotate = currentRotate - (index - currentIndex) * 360 / mockIntervals.length;
+                                setCurrentIndex(index);
+                                setCurrentRotate(newRotate);
+                                setCurrentInterval(mockIntervals[index]);
+                                updateCurrentTypeDate(startDate, mockIntervals[index].intervalStart, setStartDate)
+                                updateCurrentTypeDate(endDate, mockIntervals[index].intervalEnd, setEndDate)
                             }}
-                            onMouseLeave={() => {
-                                setHovered(null)
+                            style={{
+                                transform: `rotate(-${360 + positiveRotate}deg)`
                             }}
                         >
-                            <Number
-                                $hover={currentIndex === mockIntervals.indexOf(date) || (hovered === index + 1)}
-                                onClick={() => {
-                                    if (currentIndex === index) return;
-                                    setIsRotate(true);
-                                    const newRotate = currentRotate - (index - currentIndex) * 360 / mockIntervals.length;
-                                    setCurrentIndex(index);
-                                    setCurrentRotate(newRotate);
-                                    setCurrentInterval(mockIntervals[index]);
-                                    updateCurrentTypeDate(startDate, mockIntervals[index].intervalStart, setStartDate)
-                                    updateCurrentTypeDate(endDate, mockIntervals[index].intervalEnd, setEndDate)
-                                    setTimeout(() => {
-                                        setIsRotate(false)
-                                    }, 700)
-                                }}
+                            {(currentIndex === mockIntervals.indexOf(date) || (hovered === index + 1)) &&
+                                <span style={{background: 'transparent'}}>
+                                        {index + 1}
+                                    </span>
+                            }
+                            {(!isRotate && (currentIndex === index)) && <CurrentTitle
                             >
-                                {(currentIndex === mockIntervals.indexOf(date) || (hovered === index + 1)) &&
-                                    <span
-                                        style={{
-                                            background: 'transparent',
-                                            transform: `rotate(-${360 / mockIntervals.length * (index + 1) + 40 + positiveRotate}deg)`
-                                        }}>
-            {index + 1}
-            </span>
-                                }
-                                {(!isRotate && (currentIndex === index)) && <CurrentTitle
-                                    style={{
-
-                                        transform: `rotate(-${360 / mockIntervals.length * (index + 1) + 40 + positiveRotate}deg)`
-                                    }}>
-                                    {currentInterval.title}
-                                </CurrentTitle>}
-                            </Number>
-                        </DotWrapper>
-
-                    </TemplateCircle>
+                                {currentInterval.title}
+                            </CurrentTitle>}
+                        </Number>
+                    </DotWrapper>
                 ))}
             </Circle>
             <DateTitle>
