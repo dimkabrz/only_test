@@ -7,7 +7,6 @@ import React, {RefObject, useRef, useState} from "react";
 import {mockIntervals} from "../../../../mock/mock";
 import 'swiper/css/pagination';
 
-
 const Main = styled.div`
   margin: 0 8% 0 17%;
   border-left: 1px solid rgba(66, 86, 122, 0.1);
@@ -75,7 +74,7 @@ const Circle = styled.div`
   position: relative;
   top: 215px;
   left: calc(50% - 270px);
-  transition: 0.7s;
+  transition: 1s;
   z-index: 10;
   background: transparent;
   @media (max-width: 768px) {
@@ -337,6 +336,8 @@ export const MainContainer = () => {
 
     const decrement = () => {
         planingRotate();
+        setCurrentRotate(currentRotate + 360 / mockIntervals.length)
+        setHovered(0)
         if (currentIndex > 0) {
             setCurrentInterval(mockIntervals[currentIndex - 1])
             setCurrentIndex(currentIndex - 1);
@@ -348,27 +349,27 @@ export const MainContainer = () => {
             updateCurrentTypeDate(startDate, mockIntervals[mockIntervals.length - 1].intervalStart, setStartDate);
             updateCurrentTypeDate(endDate, mockIntervals[mockIntervals.length - 1].intervalEnd, setEndDate)
         }
-        setCurrentRotate(currentRotate + 360 / mockIntervals.length)
-
-        setHovered(0)
     }
 
     const increment = () => {
         planingRotate();
+        setCurrentRotate(currentRotate - 360 / mockIntervals.length)
+        setHovered(0)
         if (currentIndex < mockIntervals.length - 1) {
-            setCurrentInterval(mockIntervals[currentIndex + 1])
             setCurrentIndex(currentIndex + 1)
             updateCurrentTypeDate(startDate, mockIntervals[currentIndex + 1].intervalStart, setStartDate)
             updateCurrentTypeDate(endDate, mockIntervals[currentIndex + 1].intervalEnd, setEndDate)
+            setTimeout(() => {
+                setCurrentInterval(mockIntervals[currentIndex + 1])
+            }, 500)
         } else {
-            setCurrentInterval(mockIntervals[0])
             setCurrentIndex(0)
             updateCurrentTypeDate(startDate, mockIntervals[0].intervalStart, setStartDate)
             updateCurrentTypeDate(endDate, mockIntervals[0].intervalEnd, setEndDate)
+            setTimeout(() => {
+                setCurrentInterval(mockIntervals[0])
+            }, 500)
         }
-        setCurrentRotate(currentRotate - 360 / mockIntervals.length)
-
-        setHovered(0)
     }
 
 
@@ -384,7 +385,7 @@ export const MainContainer = () => {
             </Title>
             <Line $vertical={'true'} $zindex={'2'}/>
             <Line $vertical={'false'} orientation={'rotate(0.5turn)'}/>
-            {!isRotate && <Line $mobile={true} $vertical={'false'} orientation={'rotate(0.5turn)'}/> }
+            {!isRotate && <Line $mobile={true} $vertical={'false'} orientation={'rotate(0.5turn)'}/>}
             <MobileTitle $isRotate={isRotate}>
                 {currentInterval.title}
             </MobileTitle>
@@ -411,9 +412,11 @@ export const MainContainer = () => {
                                 const newRotate = currentRotate - (index - currentIndex) * 360 / mockIntervals.length;
                                 setCurrentIndex(index);
                                 setCurrentRotate(newRotate);
-                                setCurrentInterval(mockIntervals[index]);
                                 updateCurrentTypeDate(startDate, mockIntervals[index].intervalStart, setStartDate)
                                 updateCurrentTypeDate(endDate, mockIntervals[index].intervalEnd, setEndDate)
+                                setTimeout(() => {
+                                    setCurrentInterval(mockIntervals[index]);
+                                }, 500)
                             }}
                             style={{
                                 transform: `rotate(${currentRotate >= 0 ? -currentRotate : Math.abs(currentRotate)}deg)`
