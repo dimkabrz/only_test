@@ -230,7 +230,7 @@ const SwiperContainer = styled.div<{ $isRotate?: boolean }>`
   opacity: ${props => props.$isRotate ? '0' : '1'};
   transition: opacity 0.5s;
   @media (max-width: 768px) {
-    width: 97%;
+    width: calc(100% - 22px);
     top: 313px;
     left: 20px;
   }
@@ -382,6 +382,7 @@ export const MainContainer = () => {
                             top: `${530 / 2 + Math.round(265 * (Math.cos(coords[index])))}px`,
                             left: `${530 / 2 - Math.round(265 * (Math.sin(coords[index])))}px`
                         }}
+                        key={date.id}
                     >
                         <Number
                             $hover={currentIndex === mockIntervals.indexOf(date) || (hovered === index + 1)}
